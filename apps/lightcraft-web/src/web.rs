@@ -467,6 +467,10 @@ impl WebApp {
         }
         app.ui = app.ui.sanitized();
         app.library_problem = problem;
+        // The desktop control channel for the page (`control::request`): agents and tests. No CPU
+        // copies of the photos for headless screenshots: in the browser the compositor takes them.
+        app = app.with_control(crate::control::channel(&cc.egui_ctx));
+        app.renderer.keep_pixels = false;
         let n = opts.workers.unwrap_or_else(|| {
             let cores = window().map_or(1, |w| w.navigator().hardware_concurrency() as usize);
             cores.saturating_sub(1).clamp(1, 4)
